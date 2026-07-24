@@ -89,6 +89,12 @@ flowchart TD
 
 ---
 
+## Dashboard Preview
+
+![AgentTrace Dashboard](docs/images/dashboard.png)
+
+---
+
 ## Local Setup
 
 ### Prerequisites

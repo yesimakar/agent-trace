@@ -8,7 +8,7 @@ from app.database import Base
 
 
 def utc_now() -> datetime:
-    return datetime.now(UTC).replace(tzinfo=None)
+    return datetime.now(UTC)
 
 
 def new_id() -> str:

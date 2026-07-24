@@ -63,6 +63,11 @@ def _estimate_cost_usd(prompt_tokens: int, completion_tokens: int) -> float:
     return round((total_tokens / 1_000_000) * 2.50, 6)
 
 
+def _as_utc(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
 def _recalculate_run(db: Session, run: AgentRun) -> None:
     events = db.query(TraceEvent).filter(TraceEvent.run_id == run.id).all()
     llm_calls = db.query(LLMCall).filter(LLMCall.run_id == run.id).all()
@@ -77,8 +82,10 @@ def _recalculate_run(db: Session, run: AgentRun) -> None:
     run.total_errors = len(errors)
     run.estimated_cost_usd = round(sum(call.estimated_cost_usd for call in llm_calls), 6)
 
-    if run.ended_at:
-        run.duration_ms = int((run.ended_at - run.started_at).total_seconds() * 1000)
+    if run.ended_at and run.started_at:
+        start = _as_utc(run.started_at)
+        end = _as_utc(run.ended_at)
+        run.duration_ms = max(0, int((end - start).total_seconds() * 1000))
 
 
 @app.post("/api/runs", response_model=RunRead, status_code=201)
@@ -186,14 +193,14 @@ def create_event(run_id: str, payload: TraceEventCreate, db: Session = Depends(g
             )
         )
         run.status = "failed"
-        run.ended_at = datetime.now(UTC).replace(tzinfo=None)
+        run.ended_at = datetime.now(UTC)
 
     if payload.event_type == "run_completed":
         run.status = "completed"
-        run.ended_at = datetime.now(UTC).replace(tzinfo=None)
+        run.ended_at = datetime.now(UTC)
     elif payload.event_type == "run_failed":
         run.status = "failed"
-        run.ended_at = datetime.now(UTC).replace(tzinfo=None)
+        run.ended_at = datetime.now(UTC)
 
     _recalculate_run(db, run)
     db.commit()
