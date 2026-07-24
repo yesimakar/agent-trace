@@ -93,10 +93,6 @@ flowchart TD
 
 ![AgentTrace Dashboard](docs/images/dashboard.png)
 
-## Dashboard Preview
-
-![AgentTrace Dashboard](docs/images/dashboard.png)
-
 The dashboard shows run-level metrics, recent agent executions, execution activity, timeline events, LLM calls, tool calls, guardrail checks, and recorded errors.
 
 ---
