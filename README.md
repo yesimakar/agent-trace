@@ -350,8 +350,9 @@ The demo agent keeps local setup simple and reviewable. It allows the trace inge
 - The demo agent does not require external AI-provider API keys.
 - Trace payloads may contain tool inputs, output summaries, and metadata; avoid sending secrets or sensitive production data into local traces.
 - The project is designed for local development and portfolio review, not direct production deployment without additional hardening.
+- Do not expose this API directly to the public internet without authentication, authorization, rate limiting, and secret-redaction controls.
 
-Recommended production hardening would include:
+- Recommended production hardening would include:
 
 - Authentication and authorization
 - Tenant isolation
